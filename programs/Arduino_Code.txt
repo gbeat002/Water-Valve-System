@@ -1,0 +1,142 @@
+#include <SPI.h>
+char buff [255];
+volatile byte indx;
+volatile boolean process;
+unsigned int i = 0;
+unsigned int j = 0;
+void setup (void) {
+   pinMode(8, OUTPUT);
+   pinMode(7, OUTPUT);
+   pinMode(6, OUTPUT);
+   pinMode(5, OUTPUT);
+   pinMode(4, OUTPUT);
+   pinMode(3, OUTPUT);
+   pinMode(2, OUTPUT);
+   pinMode(1, OUTPUT);
+   Serial.begin (115200);
+   pinMode(MISO, OUTPUT); // have to send on master in so it set as output
+   SPCR |= _BV(SPE); // turn on SPI in slave mode
+   indx = 0; // buffer empty
+   process = false;
+   SPI.attachInterrupt(); // turn on interrupt
+}
+ 
+ISR (SPI_STC_vect) // SPI interrupt routine 
+{ 
+   byte c = SPDR; // read byte from SPI Data Register
+   
+   if (indx < sizeof(buff)) {
+      buff[indx++] = c; // save data in the next index in the array buff
+      if (c == '\n') { 
+        buff[indx - 1] = 0; // replace newline ('\n') with end of string (0)
+        process = true;
+      }
+   }   
+}
+ 
+void loop (void) {
+   if (process) {
+      process = false; //reset the process
+      Serial.println (buff); //print the array on serial monitor
+      indx= 0; //reset button to zero
+      display(buff[0] - 48);
+   }
+}
+
+void display(int number) {
+        if(number == 0) { 
+            digitalWrite(2, LOW);
+            digitalWrite(3, HIGH);
+            digitalWrite(4, HIGH);
+            digitalWrite(5, HIGH);
+            digitalWrite(6, HIGH);
+            digitalWrite(7, HIGH);
+            digitalWrite(8, HIGH);
+       }
+       else if(number == 1) {
+            digitalWrite(2, LOW);
+            digitalWrite(3, LOW);
+            digitalWrite(4, HIGH);
+            digitalWrite(5, LOW);
+            digitalWrite(6, LOW);
+            digitalWrite(7, HIGH);
+            digitalWrite(8, LOW);
+       }
+       else if(number == 2) {
+            digitalWrite(2, HIGH);
+            digitalWrite(3, HIGH);
+            digitalWrite(4, HIGH);
+            digitalWrite(5, HIGH);
+            digitalWrite(6, HIGH);
+            digitalWrite(7, LOW);
+            digitalWrite(8, LOW);
+       }
+       else if(number == 3) {
+            digitalWrite(2, HIGH);
+            digitalWrite(3, HIGH);
+            digitalWrite(4, HIGH);
+            digitalWrite(5, LOW);
+            digitalWrite(6, HIGH);
+            digitalWrite(7, HIGH);
+            digitalWrite(8, LOW);
+       }
+       else if(number == 4) {
+            digitalWrite(2, HIGH);
+            digitalWrite(3, LOW);
+            digitalWrite(4, HIGH);
+            digitalWrite(5, LOW);
+            digitalWrite(6, LOW);
+            digitalWrite(7, HIGH);
+            digitalWrite(8, HIGH);
+       }
+       else if(number == 5) {
+            digitalWrite(2, HIGH);
+            digitalWrite(3, HIGH);
+            digitalWrite(4, LOW);
+            digitalWrite(5, LOW);
+            digitalWrite(6, HIGH);
+            digitalWrite(7, HIGH);
+            digitalWrite(8, HIGH);
+       } 
+       else if(number == 6) {
+            digitalWrite(2, HIGH);
+            digitalWrite(3, HIGH);
+            digitalWrite(4, LOW);
+            digitalWrite(5, HIGH);
+            digitalWrite(6, HIGH);
+            digitalWrite(7, HIGH);
+            digitalWrite(8, HIGH);
+       }
+       else if(number == 7) {
+            digitalWrite(2, LOW);
+            digitalWrite(3, HIGH);
+            digitalWrite(4, HIGH);
+            digitalWrite(5, LOW);
+            digitalWrite(6, LOW);
+            digitalWrite(7, HIGH);
+            digitalWrite(8, LOW);
+       }
+       else if(number == 8) {
+            digitalWrite(2, HIGH);
+            digitalWrite(3, HIGH);
+            digitalWrite(4, HIGH);
+            digitalWrite(5, HIGH);
+            digitalWrite(6, HIGH);
+            digitalWrite(7, HIGH);
+            digitalWrite(8, HIGH);
+       }
+       else if(number == 9) {
+            digitalWrite(2, HIGH);
+            digitalWrite(3, HIGH);
+            digitalWrite(4, HIGH);
+            digitalWrite(5, LOW);
+            digitalWrite(6, HIGH);
+            digitalWrite(7, HIGH);
+            digitalWrite(8, HIGH);
+       }
+
+
+
+}
+
+
